@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Leagues Directory - Tables & Standings</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 40px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .instructions {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #2a5298;
+        }
+        
+        .instructions h3 {
+            color: #2a5298;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .instructions p {
+            margin-bottom: 10px;
+        }
+        
+        .instructions code {
+            background-color: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #1e40af;
+        }
+        
+        .league-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        
+        .country-section {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .country-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .country-header {
+            background: linear-gradient(to right, #3a7bd5, #00d2ff);
+            color: white;
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .country-header h2 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .country-flag {
+            font-size: 1.8rem;
+        }
+        
+        .league-dropdown {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease, padding 0.3s ease;
+        }
+        
+        .league-dropdown.active {
+            padding: 20px;
+            max-height: 500px;
+        }
+        
+        .league-item {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background-color: #f8fafc;
+            border-radius: 6px;
+            border-left: 4px solid #3a7bd5;
+            transition: all 0.2s ease;
+        }
+        
+        .league-item:hover {
+            background-color: #e8f4fc;
+            transform: translateX(5px);
+        }
+        
+        .league-item a {
+            text-decoration: none;
+            color: #1e3c72;
+            font-weight: 500;
+            display: block;
+            width: 100%;
+        }
+        
+        .league-item i {
+            margin-right: 10px;
+            color: #3a7bd5;
+        }
+        
+        .no-link {
+            color: #94a3b8 !important;
+            font-weight: normal !important;
+        }
+        
+        .league-item:hover a {
+            color: #2563eb;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .league-container {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .country-header h2 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-futbol"></i> Football Leagues Directory</h1>
+            <p>Browse football leagues by country and access league tables with a single click</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="instructions">
+            <h3><i class="fas fa-info-circle"></i> How to Use This Directory</h3>
+            <p>1. Click on any country to expand its league list</p>
+            <p>2. Click on a league name to open its table/standings page on LiveScore</p>
+            <p>3. All links are pre-filled with LiveScore standings URLs</p>
+        </div>
+        
+        <div class="league-container" id="leagueContainer">
+            <!-- Leagues will be dynamically inserted here by JavaScript -->
+        </div>
+        
+        <footer>
+            <p>Football Leagues Directory | All links point to LiveScore standings pages</p>
+            <p>Data sourced from LiveScore.com | Updated for 2025/26 seasons</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Football leagues data organized by country with LiveScore URLs
+        const leaguesData = [
+            {
+                country: "International Clubs",
+                flag: "🌍",
+                leagues: [
+                    { name: "UEFA Champions League 25/26", link: "https://www.livescore.com/en/football/champions-league/standings/" },
+                    { name: "UEFA Europa League 25/26", link: "https://www.livescore.com/en/football/europa-league/standings/" },
+                    { name: "CONMEBOL Libertadores 2026", link: "https://www.livescore.com/en/football/copa-libertadores/standings/" },
+                    { name: "CONMEBOL Sudamericana 2026", link: "https://www.livescore.com/en/football/copa-sudamericana/standings/" },
+                    { name: "CONMEBOL Recopa 2026", link: "https://www.livescore.com/en/football/recopa-sudamericana/" }
+                ]
+            },
+            {
+                country: "International",
+                flag: "🌎",
+                leagues: [
+                    { name: "World Cup", link: "https://www.livescore.com/en/football/world-cup/standings/" },
+                    { name: "FIFA World Cup Qualification UEFA 2026", link: "https://www.livescore.com/en/football/world-cup-qualifying-uefa/standings/" }
+                ]
+            },
+            {
+                country: "England",
+                flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+                leagues: [
+                    { name: "Premier League 25/26", link: "https://www.livescore.com/en/football/england/premier-league/standings/" },
+                    { name: "Championship 25/26", link: "https://www.livescore.com/en/football/england/championship/standings/" },
+                    { name: "League One 25/26", link: "https://www.livescore.com/en/football/england/league-one/standings/" },
+                    { name: "League Two 25/26", link: "https://www.livescore.com/en/football/england/league-two/standings/" },
+                    { name: "National League 25/26", link: "https://www.livescore.com/en/football/england/national-league/standings/" },
+                    { name: "FA Cup 25/26", link: "https://www.livescore.com/en/football/england/fa-cup/" },
+                    { name: "EFL Cup 25/26", link: "https://www.livescore.com/en/football/england/efl-cup/" },
+                    { name: "National League North 25/26", link: "https://www.livescore.com/en/football/england/national-league-north/standings/" },
+                    { name: "National League South 25/26", link: "https://www.livescore.com/en/football/england/national-league-south/standings/" }
+                ]
+            },
+            {
+                country: "Spain",
+                flag: "🇪🇸",
+                leagues: [
+                    { name: "LaLiga 25/26", link: "https://www.livescore.com/en/football/spain/laliga/standings/" },
+                    { name: "LaLiga 2 25/26", link: "https://www.livescore.com/en/football/spain/laliga2/standings/" },
+                    { name: "Copa del Rey 25/26", link: "https://www.livescore.com/en/football/spain/copa-del-rey/" }
+                ]
+            },
+            {
+                country: "Germany",
+                flag: "🇩🇪",
+                leagues: [
+                    { name: "Bundesliga 25/26", link: "https://www.livescore.com/en/football/germany/bundesliga/standings/" },
+                    { name: "2. Bundesliga 25/26", link: "https://www.livescore.com/en/football/germany/2-bundesliga/standings/" },
+                    { name: "3. Liga 25/26", link: "https://www.livescore.com/en/football/germany/3-liga/standings/" },
+                    { name: "DFB Pokal 25/26", link: "https://www.livescore.com/en/football/germany/dfb-pokal/" },
+                    { name: "Women Bundesliga 25/26", link: "https://www.livescore.com/en/football/germany/frauen-bundesliga/standings/" }
+                ]
+            },
+            {
+                country: "Italy",
+                flag: "🇮🇹",
+                leagues: [
+                    { name: "Serie A 25/26", link: "https://www.livescore.com/en/football/italy/serie-a/standings/" },
+                    { name: "Serie B 25/26", link: "https://www.livescore.com/en/football/italy/serie-b/standings/" },
+                    { name: "Coppa Italia 25/26", link: "https://www.livescore.com/en/football/italy/coppa-italia/" }
+                ]
+            },
+            {
+                country: "France",
+                flag: "🇫🇷",
+                leagues: [
+                    { name: "Ligue 1 25/26", link: "https://www.livescore.com/en/football/france/ligue-1/standings/" },
+                    { name: "Ligue 2 25/26", link: "https://www.livescore.com/en/football/france/ligue-2/standings/" },
+                    { name: "Coupe de France 25/26", link: "https://www.livescore.com/en/football/france/coupe-de-france/" }
+                ]
+            },
+            {
+                country: "Brazil",
+                flag: "🇧🇷",
+                leagues: [
+                    { name: "Brasileiro Serie A 2026", link: "https://www.livescore.com/en/football/brazil/serie-a/standings/" },
+                    { name: "Brasileiro Serie B 2026", link: "https://www.livescore.com/en/football/brazil/serie-b/standings/" },
+                    { name: "Paulista, Serie A1 2026", link: "https://www.livescore.com/en/football/brazil/paulista-a1/" },
+                    { name: "Carioca, Serie A 2026", link: "https://www.livescore.com/en/football/brazil/carioca-a/" },
+                    { name: "Mineiro, Modulo I 2026", link: "https://www.livescore.com/en/football/brazil/mineiro/" }
+                ]
+            },
+            {
+                country: "Argentina",
+                flag: "🇦🇷",
+                leagues: [
+                    { name: "Copa Argentina 2026", link: "https://www.livescore.com/en/football/argentina/copa-argentina/" }
+                ]
+            },
+            {
+                country: "Netherlands",
+                flag: "🇳🇱",
+                leagues: [
+                    { name: "Eredivisie 25/26", link: "https://www.livescore.com/en/football/netherlands/eredivisie/standings/" },
+                    { name: "KNVB beker 25/26", link: "https://www.livescore.com/en/football/netherlands/knvb-beker/" }
+                ]
+            },
+            {
+                country: "Portugal",
+                flag: "🇵🇹",
+                leagues: [
+                    { name: "Primeira Liga 25/26", link: "https://www.livescore.com/en/football/portugal/primeira-liga/standings/" },
+                    { name: "Taça de Portugal 25/26", link: "https://www.livescore.com/en/football/portugal/taca-de-portugal/" }
+                ]
+            },
+            {
+                country: "USA",
+                flag: "🇺🇸",
+                leagues: [
+                    { name: "MLS 2026", link: "https://www.livescore.com/en/football/usa/mls/standings/" }
+                ]
+            },
+            {
+                country: "Mexico",
+                flag: "🇲🇽",
+                leagues: [
+                    { name: "Liga MX 25/26", link: "https://www.livescore.com/en/football/mexico/liga-mx/standings/" },
+                    { name: "Copa MX 25/26", link: "https://www.livescore.com/en/football/mexico/copa-mx/" }
+                ]
+            },
+            {
+                country: "Belgium",
+                flag: "🇧🇪",
+                leagues: [
+                    { name: "Pro League 25/26", link: "https://www.livescore.com/en/football/belgium/pro-league/standings/" },
+                    { name: "Challenger Pro League 25/26", link: "https://www.livescore.com/en/football/belgium/challenger-pro-league/standings/" },
+                    { name: "Beker van Belgie 25/26", link: "https://www.livescore.com/en/football/belgium/belgian-cup/" }
+                ]
+            },
+            {
+                country: "Austria",
+                flag: "🇦🇹",
+                leagues: [
+                    { name: "Bundesliga 25/26", link: "https://www.livescore.com/en/football/austria/bundesliga/standings/" },
+                    { name: "1. Liga 25/26", link: "https://www.livescore.com/en/football/austria/2-liga/standings/" },
+                    { name: "OFB Cup 25/26", link: "https://www.livescore.com/en/football/austria/ofb-cup/" }
+                ]
+            },
+            {
+                country: "Turkey",
+                flag: "🇹🇷",
+                leagues: [
+                    { name: "Süper Lig 25/26", link: "https://www.livescore.com/en/football/turkey/super-lig/standings/" },
+                    { name: "Türkiye Kupası 25/26", link: "https://www.livescore.com/en/football/turkey/turkey-cup/" }
+                ]
+            },
+            {
+                country: "Scotland",
+                flag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+                leagues: [
+                    { name: "Scottish Premiership 25/26", link: "https://www.livescore.com/en/football/scotland/premiership/standings/" },
+                    { name: "Scottish Championship 25/26", link: "https://www.livescore.com/en/football/scotland/championship/standings/" },
+                    { name: "Scottish Cup 25/26", link: "https://www.livescore.com/en/football/scotland/scottish-cup/" }
+                ]
+            },
+            {
+                country: "Switzerland",
+                flag: "🇨🇭",
+                leagues: [
+                    { name: "Super League 25/26", link: "https://www.livescore.com/en/football/switzerland/super-league/standings/" }
+                ]
+            },
+            {
+                country: "Denmark",
+                flag: "🇩🇰",
+                leagues: [
+                    { name: "Superliga 25/26", link: "https://www.livescore.com/en/football/denmark/superliga/standings/" },
+                    { name: "1. Division 25/26", link: "https://www.livescore.com/en/football/denmark/1st-division/standings/" },
+                    { name: "DBU Pokalen 25/26", link: "https://www.livescore.com/en/football/denmark/dbu-pokalen/" }
+                ]
+            },
+            {
+                country: "Sweden",
+                flag: "🇸🇪",
+                leagues: [
+                    { name: "Allsvenskan 2026", link: "https://www.livescore.com/en/football/sweden/allsvenskan/standings/" },
+                    { name: "Superettan 2026", link: "https://www.livescore.com/en/football/sweden/superettan/standings/" },
+                    { name: "Damallsvenskan 2026", link: "https://www.livescore.com/en/football/sweden/damallsvenskan/standings/" }
+                ]
+            },
+            {
+                country: "Norway",
+                flag: "🇳🇴",
+                leagues: [
+                    { name: "Eliteserien 2026", link: "https://www.livescore.com/en/football/norway/eliteserien/standings/" },
+                    { name: "1st Division 2026", link: "https://www.livescore.com/en/football/norway/1-division/standings/" }
+                ]
+            },
+            {
+                country: "Greece",
+                flag: "🇬🇷",
+                leagues: [
+                    { name: "Super League 25/26", link: "https://www.livescore.com/en/football/greece/super-league/standings/" },
+                    { name: "Greece Cup 25/26", link: "https://www.livescore.com/en/football/greece/greek-cup/" }
+                ]
+            },
+            {
+                country: "Czechia",
+                flag: "🇨🇿",
+                leagues: [
+                    { name: "1. Liga 25/26", link: "https://www.livescore.com/en/football/czech-republic/1-liga/standings/" },
+                    { name: "Czech Cup 25/26", link: "https://www.livescore.com/en/football/czech-republic/czech-cup/" }
+                ]
+            },
+            {
+                country: "Croatia",
+                flag: "🇭🇷",
+                leagues: [
+                    { name: "HNL 25/26", link: "https://www.livescore.com/en/football/croatia/1-hnl/standings/" }
+                ]
+            },
+            {
+                country: "Poland",
+                flag: "🇵🇱",
+                leagues: [
+                    { name: "Ekstraklasa 25/26", link: "https://www.livescore.com/en/football/poland/ekstraklasa/standings/" },
+                    { name: "Polish Cup 25/26", link: "https://www.livescore.com/en/football/poland/polish-cup/" }
+                ]
+            },
+            {
+                country: "Ukraine",
+                flag: "🇺🇦",
+                leagues: [
+                    { name: "Premier League 25/26", link: "https://www.livescore.com/en/football/ukraine/premier-league/standings/" }
+                ]
+            },
+            {
+                country: "Russia",
+                flag: "🇷🇺",
+                leagues: [
+                    { name: "Premier League 25/26", link: "https://www.livescore.com/en/football/russia/premier-league/standings/" },
+                    { name: "Russian Cup 25/26", link: "https://www.livescore.com/en/football/russia/russian-cup/" }
+                ]
+            },
+            {
+                country: "Australia",
+                flag: "🇦🇺",
+                leagues: [
+                    { name: "A-League 25/26", link: "https://www.livescore.com/en/football/australia/a-league/standings/" }
+                ]
+            },
+            {
+                country: "Japan",
+                flag: "🇯🇵",
+                leagues: [
+                    { name: "J1 League 25/26", link: "https://www.livescore.com/en/football/japan/j1-league/standings/" },
+                    { name: "J2 League 25/26", link: "https://www.livescore.com/en/football/japan/j2-league/standings/" }
+                ]
+            },
+            {
+                country: "South Korea",
+                flag: "🇰🇷",
+                leagues: [
+                    { name: "K League 1 25/26", link: "https://www.livescore.com/en/football/south-korea/k-league-1/standings/" }
+                ]
+            },
+            {
+                country: "China",
+                flag: "🇨🇳",
+                leagues: [
+                    { name: "Super League 25/26", link: "https://www.livescore.com/en/football/china/super-league/standings/" }
+                ]
+            },
+            {
+                country: "Saudi Arabia",
+                flag: "🇸🇦",
+                leagues: [
+                    { name: "Pro League 25/26", link: "https://www.livescore.com/en/football/saudi-arabia/pro-league/standings/" }
+                ]
+            },
+            {
+                country: "United Arab Emirates",
+                flag: "🇦🇪",
+                leagues: [
+                    { name: "UAE Pro League 25/26", link: "https://www.livescore.com/en/football/uae/pro-league/standings/" }
+                ]
+            },
+            {
+                country: "South Africa",
+                flag: "🇿🇦",
+                leagues: [
+                    { name: "Premiership 25/26", link: "https://www.livescore.com/en/football/south-africa/premiership/standings/" }
+                ]
+            },
+            {
+                country: "Egypt",
+                flag: "🇪🇬",
+                leagues: [
+                    { name: "Premier League 25/26", link: "https://www.livescore.com/en/football/egypt/premier-league/standings/" }
+                ]
+            },
+            {
+                country: "Chile",
+                flag: "🇨🇱",
+                leagues: [
+                    { name: "Primera Division 2026", link: "https://www.livescore.com/en/football/chile/primera-division/standings/" }
+                ]
+            },
+            {
+                country: "Colombia",
+                flag: "🇨🇴",
+                leagues: [
+                    { name: "Primera A 2026", link: "https://www.livescore.com/en/football/colombia/primera-a/standings/" }
+                ]
+            },
+            {
+                country: "Uruguay",
+                flag: "🇺🇾",
+                leagues: [
+                    { name: "Primera Division 2026", link: "https://www.livescore.com/en/football/uruguay/primera-division/standings/" }
+                ]
+            },
+            {
+                country: "Paraguay",
+                flag: "🇵🇾",
+                leagues: [
+                    { name: "Primera Division 2026", link: "https://www.livescore.com/en/football/paraguay/primera-division/standings/" }
+                ]
+            },
+            {
+                country: "Peru",
+                flag: "🇵🇪",
+                leagues: [
+                    { name: "Primera Division 2026", link: "https://www.livescore.com/en/football/peru/primera-division/standings/" }
+                ]
+            },
+            {
+                country: "Ecuador",
+                flag: "🇪🇨",
+                leagues: [
+                    { name: "Serie A 2026", link: "https://www.livescore.com/en/football/ecuador/serie-a/standings/" }
+                ]
+            },
+            {
+                country: "Venezuela",
+                flag: "🇻🇪",
+                leagues: [
+                    { name: "Primera Division 2026", link: "https://www.livescore.com/en/football/venezuela/primera-division/standings/" }
+                ]
+            },
+            {
+                country: "Ireland",
+                flag: "🇮🇪",
+                leagues: [
+                    { name: "Premier Division 2026", link: "https://www.livescore.com/en/football/ireland/premier-division/standings/" },
+                    { name: "First Division 2026", link: "https://www.livescore.com/en/football/ireland/first-division/standings/" }
+                ]
+            },
+            {
+                country: "Wales",
+                flag: "🏴󠁧󠁢󠁷󠁬󠁳󠁿",
+                leagues: [
+                    { name: "Cymru Premier 25/26", link: "https://www.livescore.com/en/football/wales/cymru-premier/standings/" }
+                ]
+            },
+            {
+                country: "Northern Ireland",
+                flag: "🇬🇧",
+                leagues: [
+                    { name: "Premiership 25/26", link: "https://www.livescore.com/en/football/northern-ireland/premiership/standings/" }
+                ]
+            },
+            {
+                country: "Finland",
+                flag: "🇫🇮",
+                leagues: [
+                    { name: "Veikkausliiga 2026", link: "https://www.livescore.com/en/football/finland/veikkausliiga/standings/" }
+                ]
+            }
+        ];
+
+        // Function to generate HTML for each country section
+        function generateLeagueSections() {
+            const container = document.getElementById('leagueContainer');
+            
+            leaguesData.forEach(countryData => {
+                const countrySection = document.createElement('div');
+                countrySection.className = 'country-section';
+                
+                // Create league dropdown content
+                let leaguesHTML = '';
+                countryData.leagues.forEach(league => {
+                    const linkClass = league.link === '#' ? 'no-link' : '';
+                    leaguesHTML += `
+                        <div class="league-item">
+                            <a href="${league.link}" class="${linkClass}" target="_blank">
+                                <i class="fas fa-table"></i>${league.name}
+                            </a>
+                        </div>
+                    `;
+                });
+                
+                countrySection.innerHTML = `
+                    <div class="country-header">
+                        <h2><span class="country-flag">${countryData.flag}</span> ${countryData.country}</h2>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="league-dropdown">
+                        ${leaguesHTML}
+                    </div>
+                `;
+                
+                // Add click event to toggle dropdown
+                const header = countrySection.querySelector('.country-header');
+                const dropdown = countrySection.querySelector('.league-dropdown');
+                const icon = countrySection.querySelector('.fa-chevron-down');
+                
+                header.addEventListener('click', () => {
+                    dropdown.classList.toggle('active');
+                    icon.classList.toggle('fa-chevron-down');
+                    icon.classList.toggle('fa-chevron-up');
+                });
+                
+                container.appendChild(countrySection);
+            });
+        }
+
+        // Initialize the page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', generateLeagueSections);
+    </script>
+</body>
+</html>
