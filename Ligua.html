@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spanish Learning App</title>
+
+<style>
+    body{
+        font-family: Arial, sans-serif;
+        background:#0f172a;
+        color:white;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        height:100vh;
+        margin:0;
+    }
+
+    .container{
+        width:400px;
+        background:#1e293b;
+        padding:25px;
+        border-radius:15px;
+        box-shadow:0 0 20px rgba(0,0,0,0.5);
+    }
+
+    h1{
+        text-align:center;
+        color:#38bdf8;
+    }
+
+    input{
+        width:100%;
+        padding:12px;
+        border:none;
+        border-radius:10px;
+        margin-top:10px;
+        font-size:16px;
+    }
+
+    button{
+        width:100%;
+        padding:12px;
+        margin-top:10px;
+        border:none;
+        border-radius:10px;
+        background:#38bdf8;
+        color:white;
+        font-size:16px;
+        cursor:pointer;
+        transition:0.3s;
+    }
+
+    button:hover{
+        background:#0284c7;
+    }
+
+    .result{
+        margin-top:20px;
+        background:#334155;
+        padding:15px;
+        border-radius:10px;
+        min-height:50px;
+        font-size:20px;
+        text-align:center;
+    }
+
+    .label{
+        color:#94a3b8;
+        font-size:14px;
+        margin-top:15px;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Learn Spanish</h1>
+
+    <div class="label">Enter English or Spanish Word</div>
+
+    <input type="text" id="txtWord" placeholder="Type a word...">
+
+    <button onclick="translateToSpanish()">Translate to Spanish</button>
+
+    <button onclick="translateToEnglish()">Translate to English</button>
+
+    <button onclick="speakWord()">Speak Result</button>
+
+    <div class="result" id="result">
+        Translation appears here
+    </div>
+
+</div>
+
+<script>
+
+    // JSON ARRAY OF WORDS
+    const words = [
+        {
+            english: "hello",
+            spanish: "hola"
+        },
+        {
+            english: "book",
+            spanish: "libro"
+        },
+        {
+            english: "water",
+            spanish: "agua"
+        },
+        {
+            english: "dog",
+            spanish: "perro"
+        },
+        {
+            english: "cat",
+            spanish: "gato"
+        },
+        {
+            english: "school",
+            spanish: "escuela"
+        },
+        {
+            english: "food",
+            spanish: "comida"
+        },
+        {
+            english: "house",
+            spanish: "casa"
+        },
+        {
+            english: "good morning",
+            spanish: "buenos días"
+        },
+        {
+            english: "the boy",
+            spanish: "el niño"
+        },
+        {
+            english: "the girl",
+            spanish: "la niña"
+        },
+        {
+            english: "a table",
+            spanish: "una mesa"
+        }
+    ];
+
+    let currentTranslation = "";
+
+    // ENGLISH TO SPANISH
+    function translateToSpanish(){
+
+        const input =
+        document.getElementById("txtWord")
+        .value
+        .toLowerCase();
+
+        const result =
+        words.find(word =>
+        word.english === input);
+
+        if(result){
+
+            currentTranslation = result.spanish;
+
+            document.getElementById("result")
+            .innerHTML =
+            result.spanish;
+
+        }
+        else{
+
+            document.getElementById("result")
+            .innerHTML =
+            "Word not found";
+
+        }
+    }
+
+    // SPANISH TO ENGLISH
+    function translateToEnglish(){
+
+        const input =
+        document.getElementById("txtWord")
+        .value
+        .toLowerCase();
+
+        const result =
+        words.find(word =>
+        word.spanish === input);
+
+        if(result){
+
+            currentTranslation = result.english;
+
+            document.getElementById("result")
+            .innerHTML =
+            result.english;
+
+        }
+        else{
+
+            document.getElementById("result")
+            .innerHTML =
+            "Word not found";
+
+        }
+    }
+
+    // TEXT TO SPEECH
+    function speakWord(){
+
+        if(currentTranslation === ""){
+            alert("No translation available");
+            return;
+        }
+
+        const speech =
+        new SpeechSynthesisUtterance();
+
+        speech.text = currentTranslation;
+
+        // Spanish pronunciation
+        speech.lang = "es-ES";
+
+        window.speechSynthesis.speak(speech);
+    }
+
+</script>
+
+</body>
+</html>
