@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Premier League CBT Examination</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    :root {
+        --pl-purple: #37003c;
+        --pl-pink: #e90052;
+        --light: #f5f5f7;
+        --white: #ffffff;
+        --text: #222;
+        --green: #16a34a;
+        --red: #dc2626;
+        --gray: #6b7280;
+    }
+
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f3f4f6;
+        color: var(--text);
+        min-height: 100vh;
+    }
+
+    /* =========================
+       HEADER
+    ========================== */
+
+    header {
+        background: linear-gradient(
+            135deg,
+            #37003c,
+            #5b075f,
+            #37003c
+        );
+
+        color: white;
+        padding: 15px 20px;
+
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+
+        box-shadow: 0 3px 15px rgba(0,0,0,.2);
+    }
+
+    .header-inner {
+        max-width: 1100px;
+        margin: auto;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 15px;
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .brand img {
+        width: 55px;
+        height: 55px;
+        object-fit: contain;
+    }
+
+    .brand h1 {
+        font-size: 20px;
+    }
+
+    .brand small {
+        opacity: .8;
+    }
+
+    .timer {
+        background: rgba(255,255,255,.15);
+        padding: 10px 16px;
+        border-radius: 10px;
+        font-weight: bold;
+        font-size: 18px;
+        min-width: 110px;
+        text-align: center;
+    }
+
+    /* =========================
+       MAIN
+    ========================== */
+
+    main {
+        max-width: 1100px;
+        margin: 25px auto;
+        padding: 0 15px;
+    }
+
+    .exam-container {
+        display: grid;
+        grid-template-columns: 1fr 280px;
+        gap: 20px;
+    }
+
+    /* =========================
+       QUESTION CARD
+    ========================== */
+
+    .question-card {
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+
+        box-shadow: 0 5px 20px rgba(0,0,0,.08);
+
+        position: relative;
+        overflow: hidden;
+    }
+
+    /*
+       Premier League logo watermark.
+       Put your permitted logo at:
+
+       assets/pl-logo.svg
+    */
+
+    .question-card::before {
+        content: "";
+        position: absolute;
+
+        background-image: url("assets/pl-logo.svg");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 450px;
+
+        opacity: .035;
+
+        inset: 0;
+
+        pointer-events: none;
+    }
+
+    .question-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .question-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .question-number {
+        font-weight: bold;
+        color: var(--pl-purple);
+    }
+
+    .mark-btn {
+        border: none;
+        background: #f3f4f6;
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .mark-btn.active {
+        background: #facc15;
+        color: #000;
+    }
+
+    .question-text {
+        font-size: 21px;
+        font-weight: bold;
+        line-height: 1.5;
+
+        margin-bottom: 25px;
+    }
+
+    /* =========================
+       OPTIONS
+    ========================== */
+
+    .options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .option {
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 15px;
+
+        cursor: pointer;
+
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        transition: .2s;
+        background: white;
+    }
+
+    .option:hover {
+        border-color: var(--pl-pink);
+        background: #fff5f8;
+    }
+
+    .option.selected {
+        border-color: var(--pl-pink);
+        background: #fff0f5;
+    }
+
+    .option input {
+        display: none;
+    }
+
+    .option-letter {
+        width: 35px;
+        height: 35px;
+
+        border-radius: 50%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: #eee;
+
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+
+    .option.selected .option-letter {
+        background: var(--pl-pink);
+        color: white;
+    }
+
+    /* =========================
+       NAVIGATION BUTTONS
+    ========================== */
+
+    .navigation {
+        margin-top: 25px;
+
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    button {
+        font-family: inherit;
+    }
+
+    .nav-btn {
+        border: none;
+        padding: 13px 22px;
+
+        border-radius: 9px;
+
+        cursor: pointer;
+
+        font-weight: bold;
+
+        transition: .2s;
+    }
+
+    .previous {
+        background: #e5e7eb;
+        color: #111;
+    }
+
+    .next {
+        background: var(--pl-purple);
+        color: white;
+    }
+
+    .submit {
+        background: var(--pl-pink);
+        color: white;
+    }
+
+    .nav-btn:hover {
+        transform: translateY(-2px);
+        opacity: .9;
+    }
+
+    /* =========================
+       SIDEBAR
+    ========================== */
+
+    .sidebar {
+        background: white;
+
+        border-radius: 16px;
+
+        padding: 20px;
+
+        height: fit-content;
+
+        box-shadow: 0 5px 20px rgba(0,0,0,.08);
+
+        position: sticky;
+        top: 100px;
+    }
+
+    .sidebar h3 {
+        margin-bottom: 15px;
+        color: var(--pl-purple);
+    }
+
+    .progress {
+        height: 10px;
+
+        background: #e5e7eb;
+
+        border-radius: 20px;
+
+        overflow: hidden;
+
+        margin-bottom: 10px;
+    }
+
+    .progress-bar {
+        height: 100%;
+
+        width: 0%;
+
+        background: linear-gradient(
+            90deg,
+            var(--pl-purple),
+            var(--pl-pink)
+        );
+
+        transition: .3s;
+    }
+
+    .stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+
+        gap: 10px;
+
+        margin: 15px 0;
+    }
+
+    .stat {
+        background: #f8f8f8;
+        padding: 10px;
+        border-radius: 8px;
+        text-align: center;
+    }
+
+    .stat strong {
+        display: block;
+        font-size: 20px;
+        color: var(--pl-purple);
+    }
+
+    /* =========================
+       QUESTION PALETTE
+    ========================== */
+
+    .palette {
+        display: grid;
+
+        grid-template-columns:
+        repeat(5, 1fr);
+
+        gap: 7px;
+
+        max-height: 350px;
+        overflow-y: auto;
+    }
+
+    .palette button {
+        width: 100%;
+        height: 38px;
+
+        border: none;
+
+        border-radius: 6px;
+
+        background: #e5e7eb;
+
+        cursor: pointer;
+
+        font-weight: bold;
+    }
+
+    .palette button.answered {
+        background: var(--green);
+        color: white;
+    }
+
+    .palette button.current {
+        outline: 3px solid var(--pl-pink);
+    }
+
+    .palette button.marked {
+        background: #facc15;
+        color: #000;
+    }
+
+    /* =========================
+       RESULT SCREEN
+    ========================== */
+
+    .result-screen {
+        display: none;
+
+        max-width: 700px;
+
+        margin: 40px auto;
+
+        background: white;
+
+        border-radius: 18px;
+
+        padding: 35px;
+
+        text-align: center;
+
+        box-shadow: 0 10px 30px rgba(0,0,0,.12);
+    }
+
+    .result-logo {
+        width: 90px;
+        margin-bottom: 15px;
+    }
+
+    .score {
+        font-size: 55px;
+
+        font-weight: bold;
+
+        color: var(--pl-purple);
+
+        margin: 20px 0;
+    }
+
+    .result-message {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+
+    .result-details {
+        display: grid;
+
+        grid-template-columns:
+        repeat(3, 1fr);
+
+        gap: 10px;
+
+        margin: 25px 0;
+    }
+
+    .result-box {
+        padding: 15px;
+
+        background: #f3f4f6;
+
+        border-radius: 10px;
+    }
+
+    .result-box strong {
+        display: block;
+        font-size: 25px;
+        color: var(--pl-purple);
+    }
+
+    .restart {
+        background: var(--pl-purple);
+
+        color: white;
+
+        border: none;
+
+        padding: 14px 25px;
+
+        border-radius: 9px;
+
+        cursor: pointer;
+
+        font-weight: bold;
+    }
+
+    /* =========================
+       REVIEW
+    ========================== */
+
+    .review-section {
+        margin-top: 30px;
+
+        text-align: left;
+    }
+
+    .review-item {
+        padding: 15px;
+
+        margin-bottom: 12px;
+
+        border-radius: 10px;
+
+        background: #f9fafb;
+
+        border-left: 5px solid #ccc;
+    }
+
+    .review-item.correct {
+        border-left-color: var(--green);
+    }
+
+    .review-item.wrong {
+        border-left-color: var(--red);
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================== */
+
+    @media(max-width: 800px) {
+
+        .exam-container {
+            grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+            position: static;
+        }
+
+        .header-inner {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .question-text {
+            font-size: 18px;
+        }
+
+        .result-details {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     HEADER
+========================== -->
+
+<header>
+
+    <div class="header-inner">
+
+        <div class="brand">
+
+            <!--
+                Put the permitted Premier League logo here:
+
+                assets/pl-logo.svg
+            -->
+
+            <img
+                src="assets/pl-logo.svg"
+                alt="Premier League"
+            >
+
+            <div>
+                <h1 id="examTitle">
+                    Premier League CBT
+                </h1>
+
+                <small id="examSeason">
+                    2026/27 Season
+                </small>
+            </div>
+
+        </div>
+
+        <div class="timer" id="timer">
+            30:00
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- =========================
+     EXAM
+========================== -->
+
+<main id="examPage">
+
+    <div class="exam-container">
+
+        <!-- QUESTION AREA -->
+
+        <section class="question-card">
+
+            <div class="question-content">
+
+                <div class="question-top">
+
+                    <div
+                        class="question-number"
+                        id="questionNumber">
+                        Question 1
+                    </div>
+
+                    <button
+                        class="mark-btn"
+                        id="markButton"
+                        onclick="toggleMark()">
+
+                        ⭐ Mark for Review
+
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="question-text"
+                    id="questionText">
+                </div>
+
+
+                <div
+                    class="options"
+                    id="options">
+                </div>
+
+
+                <div class="navigation">
+
+                    <button
+                        class="nav-btn previous"
+                        onclick="previousQuestion()">
+
+                        ← Previous
+
+                    </button>
+
+
+                    <button
+                        class="nav-btn next"
+                        id="nextButton"
+                        onclick="nextQuestion()">
+
+                        Next →
+
+                    </button>
+
+
+                    <button
+                        class="nav-btn submit"
+                        onclick="submitExam()">
+
+                        Submit Exam
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+            <h3>Exam Progress</h3>
+
+
+            <div class="progress">
+
+                <div
+                    class="progress-bar"
+                    id="progressBar">
+                </div>
+
+            </div>
+
+
+            <div id="progressText">
+                1 / 50
+            </div>
+
+
+            <div class="stats">
+
+                <div class="stat">
+
+                    <strong id="answeredCount">
+                        0
+                    </strong>
+
+                    Answered
+
+                </div>
+
+
+                <div class="stat">
+
+                    <strong id="remainingCount">
+                        50
+                    </strong>
+
+                    Remaining
+
+                </div>
+
+            </div>
+
+
+            <h3>Questions</h3>
+
+            <div
+                class="palette"
+                id="palette">
+            </div>
+
+        </aside>
+
+    </div>
+
+</main>
+
+
+<!-- =========================
+     RESULT
+========================== -->
+
+<section
+    class="result-screen"
+    id="resultScreen">
+
+    <img
+        src="assets/pl-logo.svg"
+        class="result-logo"
+        alt="Premier League"
+    >
+
+    <h1>Exam Completed</h1>
+
+    <div
+        class="score"
+        id="finalScore">
+        0%
+    </div>
+
+    <div
+        class="result-message"
+        id="resultMessage">
+    </div>
+
+
+    <div class="result-details">
+
+        <div class="result-box">
+
+            <strong id="correctAnswers">
+                0
+            </strong>
+
+            Correct
+
+        </div>
+
+
+        <div class="result-box">
+
+            <strong id="wrongAnswers">
+                0
+            </strong>
+
+            Wrong
+
+        </div>
+
+
+        <div class="result-box">
+
+            <strong id="totalQuestions">
+                0
+            </strong>
+
+            Total
+
+        </div>
+
+    </div>
+
+
+    <button
+        class="restart"
+        onclick="restartExam()">
+
+        Restart Exam
+
+    </button>
+
+
+    <div
+        class="review-section"
+        id="reviewSection">
+
+    </div>
+
+</section>
+
+
+<script>
+
+/* ==========================================================
+   PASTE YOUR JSON HERE
+   ==========================================================
+
+   IMPORTANT:
+
+   Replace the sample questions below with the JSON
+   you generated earlier.
+
+   You can paste your complete:
+
+   {
+      "title": "...",
+      "season": "...",
+      "team": "...",
+      "total_questions": 50,
+      "questions": [...]
+   }
+
+   object.
+
+========================================================== */
+
+
+const examData = {
+
+    "title": "Manchester City 2026/27 Premier League CBT",
+
+    "season": "2026/27",
+
+    "team": "Manchester City",
+
+    "total_questions": 5,
+
+    "questions": [
+
+        {
+            "id": 1,
+
+            "question":
+            "Manchester City vs Bournemouth — what is your prediction?",
+
+            "options": {
+                "A": "Manchester City wins",
+                "B": "Manchester City draws",
+                "C": "Manchester City loses",
+                "D": "Match postponed"
+            },
+
+            "answer": "A"
+        },
+
+
+        {
+            "id": 2,
+
+            "question":
+            "Crystal Palace vs Manchester City — what is your prediction?",
+
+            "options": {
+                "A": "Crystal Palace wins",
+                "B": "Draw",
+                "C": "Manchester City wins",
+                "D": "Match postponed"
+            },
+
+            "answer": "C"
+        },
+
+
+        {
+            "id": 3,
+
+            "question":
+            "Manchester City vs Coventry — what is your prediction?",
+
+            "options": {
+                "A": "Manchester City wins",
+                "B": "Draw",
+                "C": "Coventry wins",
+                "D": "No result"
+            },
+
+            "answer": "A"
+        },
+
+
+        {
+            "id": 4,
+
+            "question":
+            "Manchester United vs Manchester City — what is your prediction?",
+
+            "options": {
+                "A": "Manchester United wins",
+                "B": "Draw",
+                "C": "Manchester City wins",
+                "D": "Match postponed"
+            },
+
+            "answer": "C"
+        },
+
+
+        {
+            "id": 5,
+
+            "question":
+            "Who do you predict will finish higher in the Premier League 2026/27 season?",
+
+            "options": {
+                "A": "Manchester City",
+                "B": "Arsenal",
+                "C": "Liverpool",
+                "D": "Chelsea"
+            },
+
+            "answer": "A"
+        }
+
+    ]
+};
+
+
+/* ==========================================================
+   VARIABLES
+========================================================== */
+
+let currentQuestion = 0;
+
+let userAnswers = {};
+
+let markedQuestions = {};
+
+let submitted = false;
+
+let timeLeft = 30 * 60;
+
+
+/* ==========================================================
+   DOM ELEMENTS
+========================================================== */
+
+const questionText =
+    document.getElementById("questionText");
+
+const optionsContainer =
+    document.getElementById("options");
+
+const questionNumber =
+    document.getElementById("questionNumber");
+
+const palette =
+    document.getElementById("palette");
+
+const progressBar =
+    document.getElementById("progressBar");
+
+const progressText =
+    document.getElementById("progressText");
+
+const answeredCount =
+    document.getElementById("answeredCount");
+
+const remainingCount =
+    document.getElementById("remainingCount");
+
+const markButton =
+    document.getElementById("markButton");
+
+
+/* ==========================================================
+   LOAD EXAM
+========================================================== */
+
+function loadExam() {
+
+    document.getElementById("examTitle").textContent =
+        examData.title || "Premier League CBT";
+
+    document.getElementById("examSeason").textContent =
+        examData.season || "";
+
+    renderQuestion();
+
+    renderPalette();
+
+    updateStats();
+
+}
+
+
+/* ==========================================================
+   RENDER QUESTION
+========================================================== */
+
+function renderQuestion() {
+
+    const question =
+        examData.questions[currentQuestion];
+
+    if (!question) return;
+
+
+    questionNumber.textContent =
+        `Question ${currentQuestion + 1} of ${examData.questions.length}`;
+
+
+    questionText.textContent =
+        question.question;
+
+
+    optionsContainer.innerHTML = "";
+
+
+    Object.entries(question.options).forEach(
+        ([letter, text]) => {
+
+            const label =
+                document.createElement("label");
+
+            label.className = "option";
+
+
+            if (
+                userAnswers[question.id] === letter
+            ) {
+
+                label.classList.add("selected");
+
+            }
+
+
+            label.innerHTML = `
+
+                <input
+                    type="radio"
+                    name="question"
+                    value="${letter}"
+                    ${userAnswers[question.id] === letter
+                        ? "checked"
+                        : ""}
+                >
+
+                <span class="option-letter">
+                    ${letter}
+                </span>
+
+                <span>
+                    ${text}
+                </span>
+
+            `;
+
+
+            label.addEventListener(
+                "click",
+                function () {
+
+                    selectAnswer(question.id, letter);
+
+                }
+            );
+
+
+            optionsContainer.appendChild(label);
+
+        }
+    );
+
+
+    updateMarkButton();
+
+    updateProgress();
+
+    renderPalette();
+
+}
+
+
+/* ==========================================================
+   SELECT ANSWER
+========================================================== */
+
+function selectAnswer(questionId, answer) {
+
+    userAnswers[questionId] = answer;
+
+    renderQuestion();
+
+    updateStats();
+
+}
+
+
+/* ==========================================================
+   NEXT QUESTION
+========================================================== */
+
+function nextQuestion() {
+
+    if (
+        currentQuestion <
+        examData.questions.length - 1
+    ) {
+
+        currentQuestion++;
+
+        renderQuestion();
+
+    }
+
+}
+
+
+/* ==========================================================
+   PREVIOUS QUESTION
+========================================================== */
+
+function previousQuestion() {
+
+    if (currentQuestion > 0) {
+
+        currentQuestion--;
+
+        renderQuestion();
+
+    }
+
+}
+
+
+/* ==========================================================
+   MARK QUESTION
+========================================================== */
+
+function toggleMark() {
+
+    const id =
+        examData.questions[currentQuestion].id;
+
+
+    markedQuestions[id] =
+        !markedQuestions[id];
+
+
+    updateMarkButton();
+
+    renderPalette();
+
+}
+
+
+function updateMarkButton() {
+
+    const id =
+        examData.questions[currentQuestion].id;
+
+
+    if (markedQuestions[id]) {
+
+        markButton.classList.add("active");
+
+        markButton.textContent =
+            "⭐ Marked";
+
+    } else {
+
+        markButton.classList.remove("active");
+
+        markButton.textContent =
+            "⭐ Mark for Review";
+
+    }
+
+}
+
+
+/* ==========================================================
+   QUESTION PALETTE
+========================================================== */
+
+function renderPalette() {
+
+    palette.innerHTML = "";
+
+
+    examData.questions.forEach(
+        (question, index) => {
+
+            const button =
+                document.createElement("button");
+
+
+            button.textContent =
+                index + 1;
+
+
+            if (userAnswers[question.id]) {
+
+                button.classList.add("answered");
+
+            }
+
+
+            if (index === currentQuestion) {
+
+                button.classList.add("current");
+
+            }
+
+
+            if (markedQuestions[question.id]) {
+
+                button.classList.add("marked");
+
+            }
+
+
+            button.onclick = function () {
+
+                currentQuestion = index;
+
+                renderQuestion();
+
+            };
+
+
+            palette.appendChild(button);
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   PROGRESS
+========================================================== */
+
+function updateProgress() {
+
+    const total =
+        examData.questions.length;
+
+    const progress =
+        ((currentQuestion + 1) / total) * 100;
+
+
+    progressBar.style.width =
+        progress + "%";
+
+
+    progressText.textContent =
+        `${currentQuestion + 1} / ${total}`;
+
+}
+
+
+/* ==========================================================
+   STATISTICS
+========================================================== */
+
+function updateStats() {
+
+    const total =
+        examData.questions.length;
+
+
+    const answered =
+        Object.keys(userAnswers).length;
+
+
+    answeredCount.textContent =
+        answered;
+
+
+    remainingCount.textContent =
+        total - answered;
+
+}
+
+
+/* ==========================================================
+   SUBMIT EXAM
+========================================================== */
+
+function submitExam() {
+
+    const total =
+        examData.questions.length;
+
+
+    const answered =
+        Object.keys(userAnswers).length;
+
+
+    const unanswered =
+        total - answered;
+
+
+    if (unanswered > 0) {
+
+        const proceed =
+            confirm(
+                `You have ${unanswered} unanswered question(s).\n\n` +
+                `Are you sure you want to submit?`
+            );
+
+
+        if (!proceed) {
+
+            return;
+
+        }
+
+    }
+
+
+    calculateResult();
+
+}
+
+
+/* ==========================================================
+   CALCULATE RESULT
+========================================================== */
+
+function calculateResult() {
+
+    let correct = 0;
+
+    let wrong = 0;
+
+
+    examData.questions.forEach(
+        question => {
+
+            const selected =
+                userAnswers[question.id];
+
+
+            if (selected === question.answer) {
+
+                correct++;
+
+            } else {
+
+                wrong++;
+
+            }
+
+        }
+    );
+
+
+    const total =
+        examData.questions.length;
+
+
+    const percentage =
+        Math.round(
+            (correct / total) * 100
+        );
+
+
+    submitted = true;
+
+
+    document.getElementById("examPage")
+        .style.display = "none";
+
+
+    document.getElementById("resultScreen")
+        .style.display = "block";
+
+
+    document.getElementById("finalScore")
+        .textContent =
+        percentage + "%";
+
+
+    document.getElementById("correctAnswers")
+        .textContent =
+        correct;
+
+
+    document.getElementById("wrongAnswers")
+        .textContent =
+        wrong;
+
+
+    document.getElementById("totalQuestions")
+        .textContent =
+        total;
+
+
+    let message;
+
+
+    if (percentage >= 70) {
+
+        message =
+            "Excellent performance! You passed the examination.";
+
+    } else if (percentage >= 50) {
+
+        message =
+            "Good attempt. You passed, but there is room for improvement.";
+
+    } else {
+
+        message =
+            "You did not reach the pass mark. Keep studying and try again.";
+
+    }
+
+
+    document.getElementById("resultMessage")
+        .textContent =
+        message;
+
+
+    generateReview();
+
+}
+
+
+/* ==========================================================
+   REVIEW ANSWERS
+========================================================== */
+
+function generateReview() {
+
+    const container =
+        document.getElementById("reviewSection");
+
+
+    container.innerHTML =
+        "<h2>Answer Review</h2>";
+
+
+    examData.questions.forEach(
+        (question, index) => {
+
+            const selected =
+                userAnswers[question.id];
+
+
+            const correct =
+                question.answer;
+
+
+            const item =
+                document.createElement("div");
+
+
+            item.className =
+                "review-item";
+
+
+            if (selected === correct) {
+
+                item.classList.add("correct");
+
+            } else {
+
+                item.classList.add("wrong");
+
+            }
+
+
+            const selectedText =
+                selected
+                    ? question.options[selected]
+                    : "Not answered";
+
+
+            const correctText =
+                question.options[correct];
+
+
+            item.innerHTML = `
+
+                <strong>
+                    Question ${index + 1}
+                </strong>
+
+                <p style="margin:8px 0;">
+                    ${question.question}
+                </p>
+
+                <p>
+                    <strong>Your answer:</strong>
+                    ${selected || "Not answered"}
+                    - ${selectedText}
+                </p>
+
+                <p>
+                    <strong>Correct answer:</strong>
+                    ${correct}
+                    - ${correctText}
+                </p>
+
+            `;
+
+
+            container.appendChild(item);
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   RESTART
+========================================================== */
+
+function restartExam() {
+
+    const proceed =
+        confirm(
+            "Are you sure you want to restart the examination?"
+        );
+
+
+    if (!proceed) return;
+
+
+    currentQuestion = 0;
+
+    userAnswers = {};
+
+    markedQuestions = {};
+
+    submitted = false;
+
+
+    document.getElementById("examPage")
+        .style.display = "block";
+
+
+    document.getElementById("resultScreen")
+        .style.display = "none";
+
+
+    loadExam();
+
+}
+
+
+/* ==========================================================
+   TIMER
+========================================================== */
+
+function startTimer() {
+
+    const timer =
+        document.getElementById("timer");
+
+
+    const interval =
+        setInterval(
+            function () {
+
+                if (submitted) {
+
+                    clearInterval(interval);
+
+                    return;
+
+                }
+
+
+                const minutes =
+                    Math.floor(
+                        timeLeft / 60
+                    );
+
+
+                const seconds =
+                    timeLeft % 60;
+
+
+                timer.textContent =
+                    `${String(minutes).padStart(2, "0")}:` +
+                    `${String(seconds).padStart(2, "0")}`;
+
+
+                if (timeLeft <= 0) {
+
+                    clearInterval(interval);
+
+                    alert(
+                        "Time is up. Your examination will be submitted automatically."
+                    );
+
+                    calculateResult();
+
+                }
+
+
+                timeLeft--;
+
+            },
+
+            1000
+        );
+
+}
+
+
+/* ==========================================================
+   PREVENT ACCIDENTAL REFRESH
+========================================================== */
+
+window.addEventListener(
+    "beforeunload",
+    function (event) {
+
+        if (!submitted) {
+
+            event.preventDefault();
+
+            event.returnValue = "";
+
+        }
+
+    }
+);
+
+
+/* ==========================================================
+   START APPLICATION
+========================================================== */
+
+loadExam();
+
+startTimer();
+
+</script>
+
+</body>
+</html>
